@@ -21,9 +21,16 @@ for c in Tcities:
 
     time.sleep(10)
 
-    e = driver.find_element(
-        By.XPATH, '//*[@id="search-results-page-1"]/ol/ol/ol[1]/li[1]/div/a')
+    # row
+    for i in range(1, 25):
+        # column
+        for k in range(1, 6):
+            e = driver.find_element(
+                By.XPATH, '//*[@id="search-results-page-1"]/ol/ol/ol[%s]/li[%s]/div/a' % (k, i))
+            e.click()
+            time.sleep(5)
+            driver.back()
+            time.sleep(5)
 
-    html = e.get_attribute('innerText')
-    print(html)
+    e.click()
     time.sleep(5)
