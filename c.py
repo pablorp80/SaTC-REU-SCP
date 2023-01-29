@@ -1,3 +1,4 @@
+
 import time
 from selenium import webdriver
 from bs4 import *
@@ -10,6 +11,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 driver = webdriver.Chrome(ChromeDriverManager().install())
 
 time.sleep(5)
+
 # both lists subject to change, but must be the actual craigslist title
 Tcities = {'sanantonio', 'austin', 'houston', 'lubbock', 'dallas', 'waco'}
 Rcities = {'detroit', 'chicago', 'stlouis',
@@ -22,13 +24,14 @@ for c in Tcities:
     curl = 'https://' + c + '.craigslist.org'
     b = False
     driver.get(curl)
-    WebDriverWait(driver, 5).until(
+
+    WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.LINK_TEXT, 'auto parts')))
     element = driver.find_element(By.LINK_TEXT, 'auto parts')
-    time.sleep(2)
+    time.sleep(5)
     element.click()
 
-    time.sleep(5)
+    time.sleep(10)
 
     prev_link = ""
     cur_link = driver.current_url
@@ -36,15 +39,15 @@ for c in Tcities:
     # simple solution to check whether the next page arrow is working,
     # after clicking the button, if the link doesn't change, go to next city
     while (cur_link != prev_link):
-        if (b):
+        if (b == True):
             break
         # row, skips last row?
         for i in range(1, 25):
-            if (b):
+            if (b == True):
                 break
             # column
             for k in range(1, 6):
-                time.sleep(1)
+                
                 # find the element on the webpage
                 x = driver.find_elements(
                     By.XPATH, '//*[@id="search-results-page-1"]/ol/ol/ol[%s]/li[%s]/div/a' % (k, i))
@@ -52,6 +55,7 @@ for c in Tcities:
 
                 # case for a page that isn't full, want it to leave asap
                 if (x == []):
+                    print('nothing found')
                     b = True
                     break
                 # otherwise extract the only element
@@ -74,9 +78,9 @@ for c in Tcities:
                 driver.execute_script("arguments[0].click();", ele)
 
                 # make sure item exists before clicking
-                time.sleep(5)
+                time.sleep(1)
                 driver.back()
-                time.sleep(5)
+                time.sleep(1)
                 print(count)
                 count = count + 1
 
@@ -91,7 +95,9 @@ for c in Tcities:
         # set previous link and go to the next page
         prev_link = cur_link
         driver.execute_script("arguments[0].click();", arrow)
-        time.sleep(8)
+        # loading entire page requires more time
+        time.sleep(10)
         cur_link = driver.current_url
 
+    print('all done')
     time.sleep(5)
