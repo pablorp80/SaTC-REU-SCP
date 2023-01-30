@@ -29,19 +29,22 @@ for c in Tcities:
 
     a = 1 # anchor counter
 
+    print ("In "+ c + " right now!")
+
     curl= "https://offerup.com/explore/sck/tx/" + c + "/5/9"
     driver.get(curl)
-    time.sleep(5)
+    time.sleep(1)
     
 
 #List<WebElement> allLinks = driver.findElements(By.tagName("a"))
 
     genericPath = '//*[@id="__next"]/div[5]/div[2]/div[3]/main/div[3]/div/div[1]/div/a['
+
     
 # curl = "https://offerup.com/explore/sck/tx/houston/5/9"
 
     
-    time.sleep(5)
+    time.sleep(1)
 
     item1 = genericPath + str(a) + "]"
     while(WebDriverWait(driver, 30).until(
@@ -51,10 +54,10 @@ for c in Tcities:
 
         element = driver.find_element(By.XPATH, item1)
         print ("ITERATION " + str(a))
-        print(element.text) # it is reading the object
-
+        #print(element.text) # prints the name, price, location (but doesnt print all the time??)
+        print(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, item1))).get_attribute("aria-label"))
         element.click()
-        time.sleep(5)
+        time.sleep(1)
         a += 1 # increment anchor
         item1 = genericPath + str(a) + "]"
         driver.get(curl)
