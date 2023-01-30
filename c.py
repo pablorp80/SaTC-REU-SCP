@@ -13,11 +13,12 @@ driver = webdriver.Chrome(ChromeDriverManager().install())
 time.sleep(5)
 # both lists subject to change, but must be the actual craigslist title
 
-#working cities, program works for this layout
-wcities = {'sanantonio', 'austin', 'houston', 'lubbock', 'dallas', 'waco', 'newyork'}
+# working cities, program works for this layout
+wcities = {'sanantonio', 'austin', 'houston','lubbock', 'dallas', 'waco', 'newyork'}
 
-#non-working cities, have a different layout
-nwcities = {'detroit', 'chicago', 'stlouis','memphis', 'baltimore', 'milwaukee'}
+# non-working cities, have a different layout
+nwcities = {'detroit', 'chicago', 'stlouis',
+            'memphis', 'baltimore', 'milwaukee'}
 
 item1 = '//*[@id="search-results-page-1"]/ol/ol/ol[1]/li[1]/div/a'
 
@@ -25,6 +26,8 @@ item1 = '//*[@id="search-results-page-1"]/ol/ol/ol[1]/li[1]/div/a'
 count = 1
 
 for c in wcities:
+    # avoid printing last item twice, FIXME quick fix
+    last = False
     curl = 'https://' + c + '.craigslist.org'
     driver.get(curl)
 
@@ -51,9 +54,13 @@ for c in wcities:
     while (cur_link != prev_link):
 
         # wait until the 'next' button is visible
-        WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
-            (By.XPATH, '/html/body/section/section/header/div[1]/div/a[3]')))
-
+        try:
+            WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
+                (By.XPATH, '/html/body/section/section/header/div[1]/div/a[3]')))
+        # go to next city
+        except:
+            last = True
+            break
         # move to 'next' button
         ActionChains(driver).move_to_element(driver.find_element(
             By.XPATH, '/html/body/section/section/header/div[1]/div/a[3]'))
@@ -64,12 +71,16 @@ for c in wcities:
 
         # click on element
         prev_link = cur_link
+        # time.sleep(3)
         driver.execute_script("arguments[0].click();", ele)
 
         # make sure item exists before clicking
-
-        WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
-            (By.XPATH, '//*[@id="titletextonly"]')))
+        try:
+            WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
+                (By.XPATH, '//*[@id="titletextonly"]')))
+        except:
+            cur_link = driver.current_url
+            continue
 
         title = driver.find_element(
             By.XPATH, '//*[@id="titletextonly"]').text
@@ -84,9 +95,10 @@ for c in wcities:
             if (price[0] != '$'):
                 price = 'unknown'
 
-        #print data to terminal for now
-        print(count, end=' ')
-        print('{PRICE: ' + price + '} ', end=' ')
-        print('{TITLE: ' + title + '}')
-        count = count + 1
-        cur_link = driver.current_url
+        # print data to terminal for now
+        if (not last):
+            print(count, end=' ')
+            print('{PRICE: ' + price + '} ', end=' ')
+            print('{TITLE: ' + title + '}')
+            count = count + 1
+            cur_link = driver.current_url
