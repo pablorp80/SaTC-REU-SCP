@@ -46,15 +46,25 @@ for c in Tcities:
     
     time.sleep(1)
 
-    item1 = genericPath + str(a) + "]"
-    while(WebDriverWait(driver, 30).until(
-        EC.visibility_of_element_located((By.XPATH, item1)))):
+    while (True):
+        item1 = genericPath + str(a) + "]"
+        try:
+            WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
+                (By.XPATH, item1)))
+        # go to next city
+        except:
+            last = True
+            break
+        
+        #while(WebDriverWait(driver, 30).until(
+         #   EC.visibility_of_element_located((By.XPATH, item1)))):
 
         x = driver.find_element(By.XPATH, item1)
 
         element = driver.find_element(By.XPATH, item1)
         print ("ITERATION " + str(a))
-        #print(element.text) # prints the name, price, location (but doesnt print all the time??)
+        #print(element.text) 
+        # # prints the name, price, location
         print(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, item1))).get_attribute("aria-label"))
         element.click()
         time.sleep(1)
