@@ -9,8 +9,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 driver = webdriver.Chrome(ChromeDriverManager().install())
 
 time.sleep(5)
-# both lists subject to change, but must be the actual craigslist title
-
 # working cities, program works for this layout, works best to put in
 # one city at a time rather than treating it as a true set
 
@@ -30,8 +28,7 @@ for c in wcities:
 
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located((By.LINK_TEXT, 'auto parts')))
-    element = driver.find_element(By.LINK_TEXT, 'auto parts')
-    element.click()
+    element = driver.find_element(By.LINK_TEXT, 'auto parts').click()
 
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located((By.CLASS_NAME, 'titlestring')))
@@ -48,12 +45,6 @@ for c in wcities:
     # make sure that the link is changing
     while (cur_link != prev_link):
         # get listing title of item
-
-        i = driver.find_elements(By.TAG_NAME, 'img')
-
-        if (i == []):
-            print('no images here')
-
         try:
             WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
                 (By.XPATH, '//*[@id="titletextonly"]')))
@@ -99,10 +90,6 @@ for c in wcities:
                 (By.ID, 'postingbody')))
             d = driver.find_element(
                 By.ID, 'postingbody').text
-            # 'show contact info' can be added to a description
-            # as a button so a buyer can contact the seller. The name
-            # of this button, however, is interpreted as a string and
-            # should be ignored in this case
             d = d.replace('show contact info', '')
         except:
             d = 'unknown'
@@ -157,3 +144,4 @@ for c in wcities:
         time.sleep(1)
         driver.execute_script("arguments[0].click();", ele)
         cur_link = driver.current_url
+
