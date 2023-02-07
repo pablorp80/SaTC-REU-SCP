@@ -16,9 +16,7 @@ time.sleep(5)
 
 #'sanantonio', 'austin', 'houston','lubbock', 'dallas', 'waco',
 # 'newyork', 'losangeles', 'sacramento', 'sfbay'
-
-#copy/paste into the set for testing as needed ^
-wcities = {'lubbock'}
+wcities = {'lubbock', 'waco'}
 
 # non-working cities, have a different layout
 #nwcities = {'detroit', 'chicago', 'stlouis','memphis', 'baltimore', 'milwaukee', }
@@ -50,6 +48,12 @@ for c in wcities:
     # make sure that the link is changing
     while (cur_link != prev_link):
         # get listing title of item
+
+        i = driver.find_elements(By.TAG_NAME, 'img')
+
+        if (i == []):
+            print('no images here')
+
         try:
             WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
                 (By.XPATH, '//*[@id="titletextonly"]')))
@@ -74,8 +78,8 @@ for c in wcities:
             date = driver.find_element(
                 By.XPATH, '/html/body/section/section/section/div[2]/p[2]/time')
             driver.execute_script("arguments[0].click();", date)
-
             date = date.text
+
         except:
             date = 'unknown'
 
@@ -105,13 +109,30 @@ for c in wcities:
 
         # print data to terminal for now
         print(count)
+        images = driver.find_elements(By.XPATH, '//img')
+
+        # Extract the URLs of the posting images
+        image_urls = [image.get_attribute("src") for image in images]
+
+        # there are some default Craigslist images, logos, maps, etc. that
+        # need to be ignored. This function fixes that.
+        def get_images(strings):
+            return {s for s in strings if s.startswith('https://images.craigslist.org/')}
+
+        image_urls = get_images(image_urls)
+
         print('{DATE:   ' + date + '}')
         print('{ID:     ' + id + '}')
         print('{PRICE:  ' + price + '}')
         print('{TITLE:  ' + title + '}')
         print('{REGION: ' + c + '}')
-        print('{DESCRIPTION: \n' + d + '}')
-        print('\n\n')
+        print('DESCRIPTION: \n' + d + '\n')
+
+        # Print the image URLs if there are any photos
+        if (image_urls != set()):
+            print('IMAGE LINKS: \n')
+            print(image_urls)
+        print('\n\n\n\n')
         count = count + 1
 
         # navigate to the 'next' button
@@ -132,7 +153,7 @@ for c in wcities:
 
         # click on 'next button' and store previous url
         prev_link = cur_link
-        #sleeping for 1 second has been enough to not get flagged
+        # sleeping for 1 second has been enough to not get flagged
         time.sleep(1)
         driver.execute_script("arguments[0].click();", ele)
         cur_link = driver.current_url
