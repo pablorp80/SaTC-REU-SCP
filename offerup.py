@@ -1,6 +1,7 @@
 #fixme : TO DO NOW:
 # catch if there is no description at all. 
 # something wrong with scroll descriptions. maybe make it the first test case.
+# check out a scroll method
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -111,6 +112,23 @@ for c in CaliCities:
         print("Item name: " + name)
         print("Item price: " + price)
         print("Region: " +  region)
+
+        #IMAGES
+        images = driver.find_elements(By.XPATH, '//img')
+        image_urls = [image.get_attribute("src") for image in images]
+        def required_images(imageList):
+            imageList = imageList[1:]
+            #return {s for s in strings if s.startswith('https://images.craigslist.org/')}
+            imageList = [s for s in imageList if s.startswith('https://images.offerup.com/')]
+            newSize = int(len(imageList)/2)
+            imageList = imageList[0: newSize]
+            return imageList
+
+        image_urls = required_images(image_urls)
+        i = 0
+        for img in image_urls:
+            i +=1
+            print(str(i) + ". " + img )
 
         print("\n ********* \n")
         time.sleep(1)
