@@ -18,6 +18,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+import datetime
 
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
@@ -92,15 +93,20 @@ for c in CaliCities:
                 except:
                     print("No description")
 
+        
         #GET USER NAME
-        name = (driver.find_element(By.XPATH, '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[1]/div/div[5]/button/div/div[2]/p[1]').text)
-        print("Username: " + name)
+        try:
+            name = (driver.find_element(By.XPATH, '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[1]/div/div[5]/button/div/div[2]/p[1]').text)
+            print("Username: " + name)
+        except: 
+            print("Username: No username")
 
         #GET PRODUCT ID
         url = driver.current_url
         parts = url.split("/")
         productID = parts[-1]
         print("Product ID: " + productID)
+        
 
         #DETAILS
         parts = itemText.split("$")
@@ -112,6 +118,17 @@ for c in CaliCities:
         print("Item name: " + name)
         print("Item price: " + price)
         print("Region: " +  region)
+
+        #TIME
+        print("System time: " + str(datetime.datetime.now()))
+    
+        xpath = "//*[contains(text(), 'ago')]"
+        element = driver.find_element(By.XPATH, xpath)
+
+        if element:
+            print("Website time: " + element.text[0:(element.text.rindex("in"))])
+        else:
+            print("Text containing the word 'ago' not found")
 
         #IMAGES
         images = driver.find_elements(By.XPATH, '//img')
