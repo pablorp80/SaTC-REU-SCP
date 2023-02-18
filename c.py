@@ -27,14 +27,10 @@ count = 1
 current_dir = os.path.dirname(os.path.abspath(__file__))
 current_dir = current_dir + "/itemdata"
 
-print(current_dir)
-
 if (not os.path.isdir(current_dir)):
     os.mkdir(current_dir)
-    chdir(current_dir)
-else:
-    chdir(current_dir)
 
+chdir(current_dir)
 
 for c in wcities:
     curl = 'https://' + c + '.craigslist.org'
