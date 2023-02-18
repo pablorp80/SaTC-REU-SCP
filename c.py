@@ -1,3 +1,5 @@
+import os
+from os import chdir
 import time
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
@@ -13,14 +15,26 @@ time.sleep(5)
 # one city at a time rather than treating it as a true set
 
 #'sanantonio', 'austin', 'houston','lubbock', 'dallas', 'waco',
-# 'newyork', 'losangeles', 'sacramento', 'sfbay'
-wcities = {'lubbock', 'waco'}
+# 'newyork', 'losangeles', 'sacramento', 'sfbay', 'lubbock'
+wcities = {'waco'}
 
 # non-working cities, have a different layout
 #nwcities = {'detroit', 'chicago', 'stlouis','memphis', 'baltimore', 'milwaukee', }
 
 # number of items, just for testing purposes
 count = 1
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = current_dir + "/itemdata"
+
+print(current_dir)
+
+if (not os.path.isdir(current_dir)):
+    os.mkdir(current_dir)
+    chdir(current_dir)
+else:
+    chdir(current_dir)
+
 
 for c in wcities:
     curl = 'https://' + c + '.craigslist.org'
@@ -108,18 +122,18 @@ for c in wcities:
 
         image_urls = get_images(image_urls)
 
-        print('{DATE:   ' + date + '}')
-        print('{ID:     ' + id + '}')
-        print('{PRICE:  ' + price + '}')
-        print('{TITLE:  ' + title + '}')
-        print('{REGION: ' + c + '}')
-        print('DESCRIPTION: \n' + d + '\n')
+        with open(id + ".txt", 'w+') as f:
+            f.write('{DATE:   ' + date + '}\n')
+            f.write('{ID:     ' + id + '}\n')
+            f.write('{PRICE:  ' + price + '}\n')
+            f.write('{TITLE:  ' + title + '}\n')
+            f.write('{REGION: ' + c + '}\n')
+            f.write('{DESCRIPTION: ' + d + '}\n')
+            if (image_urls != set()):
+                f.write('IMAGE LINKS:\n')
+                for i in image_urls:
+                    f.write(i + '\n')
 
-        # Print the image URLs if there are any photos
-        if (image_urls != set()):
-            print('IMAGE LINKS: \n')
-            print(image_urls)
-        print('\n\n\n\n')
         count = count + 1
 
         # navigate to the 'next' button
