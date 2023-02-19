@@ -16,7 +16,7 @@ time.sleep(5)
 
 #'sanantonio', 'austin', 'houston','lubbock', 'dallas', 'waco',
 # 'newyork', 'losangeles', 'sacramento', 'sfbay', 'lubbock'
-wcities = {'waco'}
+wcities = {'waco', 'lubbock'}
 
 # non-working cities, have a different layout
 #nwcities = {'detroit', 'chicago', 'stlouis','memphis', 'baltimore', 'milwaukee', }
@@ -154,4 +154,3 @@ for c in wcities:
         time.sleep(1)
         driver.execute_script("arguments[0].click();", ele)
         cur_link = driver.current_url
-
