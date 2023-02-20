@@ -16,7 +16,7 @@ time.sleep(5)
 
 #'sanantonio', 'austin', 'houston','lubbock', 'dallas', 'waco',
 # 'newyork', 'losangeles', 'sacramento', 'sfbay', 'lubbock'
-wcities = {'waco', 'lubbock'}
+wcities = {'waco'}
 
 # non-working cities, have a different layout
 #nwcities = {'detroit', 'chicago', 'stlouis','memphis', 'baltimore', 'milwaukee', }
@@ -35,7 +35,6 @@ chdir(current_dir)
 for c in wcities:
     curl = 'https://' + c + '.craigslist.org'
     driver.get(curl)
-
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located((By.LINK_TEXT, 'auto parts')))
     element = driver.find_element(By.LINK_TEXT, 'auto parts').click()
@@ -118,19 +117,35 @@ for c in wcities:
 
         image_urls = get_images(image_urls)
 
-        with open(id + ".txt", 'w+') as f:
-            f.write('{DATE:   ' + date + '}\n')
-            f.write('{ID:     ' + id + '}\n')
-            f.write('{PRICE:  ' + price + '}\n')
-            f.write('{TITLE:  ' + title + '}\n')
-            f.write('{REGION: ' + c + '}\n')
-            f.write('{DESCRIPTION: ' + d + '}\n')
-            if (image_urls != set()):
-                f.write('IMAGE LINKS:\n')
-                for i in image_urls:
-                    f.write(i + '\n')
+        old_dir = current_dir
+        current_dir = current_dir + "/" + id
+        if (not os.path.isdir(current_dir)):
+            os.mkdir(current_dir)
 
+        chdir(current_dir)
+        with open("id.txt", 'w+') as f:
+            f.write(id)
+        with open("price.txt", 'w+') as f:
+            f.write(price)
+        with open("title.txt", 'w+') as f:
+            f.write(title)
+        with open("date.txt", 'w+') as f:
+            f.write(date)
+        with open("description.txt", 'w+') as f:
+            f.write(d)
+        with open("city.txt", 'w+') as f:
+            f.write(c)
+
+        with open("url.txt", 'w+') as f:
+            if (image_urls != set()):
+                for each in image_urls:
+                    f.write(each + '\n')
+            else:
+                f.write("No images")
         count = count + 1
+
+        chdir(old_dir)
+        current_dir = old_dir
 
         # navigate to the 'next' button
         try:
@@ -154,3 +169,5 @@ for c in wcities:
         time.sleep(1)
         driver.execute_script("arguments[0].click();", ele)
         cur_link = driver.current_url
+
+driver.quit()
