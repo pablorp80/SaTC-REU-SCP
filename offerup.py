@@ -29,7 +29,7 @@ Tcities = {"houston", "dallas", "waco", "lubbock", "austin"}
 CaliCities = {"san_francisco", "oakland", "east_los_angeles", "bakersfield", "san_jose", "san_diego", "sacramento"}
 curlRoot = "https://offerup.com/explore/sck/ca/"
 
-
+myDirectoryPath = "C:/Users/Misty Kurien/Documents/Baylor/Sophomore Spring/ResearchPosition/output"
 
 for c in CaliCities:
     # /5 - Vehicles
@@ -79,25 +79,29 @@ for c in CaliCities:
         print("Description: ")
         try:
             #Prints this if "Details exist"
-            print(WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, descWithDetails))).text)
+            descriptionText = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, descWithDetails))).text
+            print(descriptionText)
         except:
             #Checking if "Description" exists
             try:
                 #Prints Description
-                print(WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, descPath))).text)
+                descriptionText =WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, descPath))).text
+                print(descriptionText)
             except:
                 try:
                     #Prints this if Description has a scroll bar
                     descPath2 = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[5]/div[2]/div[2]/div[1]/div/div/div/p'
-                    print((WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, descPath2))).text))
+                    descriptionText =(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, descPath2))).text)
+                    print(descriptionText)
                 except:
                     print("No description")
+                    descriptionText = "No description"
 
         
         #GET USER NAME
         try:
-            name = (driver.find_element(By.XPATH, '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[1]/div/div[5]/button/div/div[2]/p[1]').text)
-            print("Username: " + name)
+            username = driver.find_element(By.XPATH, '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[1]/div/div[5]/button/div/div[2]/p[1]').text
+            print("Username: " + username)
         except: 
             print("Username: No username")
 
@@ -109,24 +113,29 @@ for c in CaliCities:
         
 
         #DETAILS
-        parts = itemText.split("$")
-        name = parts[0].strip()
-        parts = parts[1].split("in")
-        price = parts[0].strip()
-        region = parts[1].strip()
+        '''parts = itemText.split("$")
+        #name = parts[0].strip()
+        #parts = parts[1].split("in")
+        #price = parts[0].strip()
+        region = parts[1].strip()'''
+        name = itemText[0:itemText.rfind("$")]
+        price = itemText[itemText.rfind("$") : itemText.rfind(" in")]
+        region = itemText[itemText.find(" in") + 4 : ]
 
         print("Item name: " + name)
         print("Item price: " + price)
         print("Region: " +  region)
 
         #TIME
+        systemTime = str(datetime.datetime.now())
         print("System time: " + str(datetime.datetime.now()))
     
         xpath = "//*[contains(text(), 'ago')]"
         element = driver.find_element(By.XPATH, xpath)
 
         if element:
-            print("Website time: " + element.text[0:(element.text.rindex("in"))])
+            websiteTime = element.text[0:(element.text.rindex("in"))]
+            print("Website time: " + websiteTime)
         else:
             print("Text containing the word 'ago' not found")
 
@@ -135,10 +144,10 @@ for c in CaliCities:
         image_urls = [image.get_attribute("src") for image in images]
         def required_images(imageList):
             imageList = imageList[1:]
-            #return {s for s in strings if s.startswith('https://images.craigslist.org/')}
             imageList = [s for s in imageList if s.startswith('https://images.offerup.com/')]
-            newSize = int(len(imageList)/2)
-            imageList = imageList[0: newSize]
+            if (len(imageList) != 1):
+                newSize = int(len(imageList)/2)
+                imageList = imageList[0: newSize]
             return imageList
 
         image_urls = required_images(image_urls)
@@ -146,6 +155,45 @@ for c in CaliCities:
         for img in image_urls:
             i +=1
             print(str(i) + ". " + img )
+    
+        #FILE STUFF
+        try:
+            newdirectory = myDirectoryPath + "/" + productID[0:productID.find("?")]
+            os.makedirs(newdirectory)
+            file = open(newdirectory + "/post.txt", "w")
+            file.write(name)
+            file.close()
+
+            file = open(newdirectory + "/date.txt", "w")
+            file.write(systemTime + "\n")
+            file.write(websiteTime)
+            file.close()
+
+            file = open(newdirectory + "/username.txt", "w")
+            file.write(username)
+            file.close()
+
+            file = open(newdirectory + "/region.txt", "w")
+            file.write(region)
+            file.close()
+
+            file = open(newdirectory + "/description.txt", "w")
+            file.write(descriptionText)
+            file.close()
+
+            file = open(newdirectory + "/price.txt", "w")
+            file.write(price)
+            file.close()
+
+            file = open(newdirectory + "/images.txt", "w")
+            for img in image_urls:
+                file.write(img + "\n" )
+            file.close()
+
+            
+        except:
+            print("not possible to make folder")
+
 
         print("\n ********* \n")
         time.sleep(1)
