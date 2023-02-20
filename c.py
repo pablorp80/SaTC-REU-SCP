@@ -141,7 +141,7 @@ for c in wcities:
                 for each in image_urls:
                     f.write(each + '\n')
             else:
-                f.write("No images")
+                f.write("no images")
         count = count + 1
 
         chdir(old_dir)
