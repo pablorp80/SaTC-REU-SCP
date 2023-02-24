@@ -123,8 +123,6 @@ for c in wcities:
             os.mkdir(current_dir)
 
         chdir(current_dir)
-        with open("id.txt", 'w+') as f:
-            f.write(id)
         with open("price.txt", 'w+') as f:
             f.write(price)
         with open("title.txt", 'w+') as f:
@@ -136,7 +134,7 @@ for c in wcities:
         with open("city.txt", 'w+') as f:
             f.write(c)
 
-        with open("url.txt", 'w+') as f:
+        with open("images.txt", 'w+') as f:
             if (image_urls != set()):
                 for each in image_urls:
                     f.write(each + '\n')
