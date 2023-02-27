@@ -16,7 +16,7 @@ time.sleep(5)
 
 #'sanantonio', 'austin', 'houston','lubbock', 'dallas', 'waco',
 # 'newyork', 'losangeles', 'sacramento', 'sfbay', 'lubbock'
-wcities = {'waco'}
+wcities = {'lubbock, dallas'}
 
 # non-working cities, have a different layout
 #nwcities = {'detroit', 'chicago', 'stlouis','memphis', 'baltimore', 'milwaukee', }
@@ -164,8 +164,7 @@ for c in wcities:
         # click on 'next button' and store previous url
         prev_link = cur_link
         # sleeping for 1 second has been enough to not get flagged
-        time.sleep(1)
+        time.sleep((count / 3) + (.8 * count) / 9.3)
         driver.execute_script("arguments[0].click();", ele)
         cur_link = driver.current_url
-
 driver.quit()
