@@ -1,7 +1,4 @@
-#fixme : TO DO NOW:
-# catch if there is no description at all. 
-# something wrong with scroll descriptions. maybe make it the first test case.
-# check out a scroll method
+#TODO: will this work if the word "details" is in the description?
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -31,6 +28,8 @@ curlRoot = "https://offerup.com/explore/sck/ca/"
 
 myDirectoryPath = "C:/Users/Misty Kurien/Documents/Baylor/Sophomore Spring/ResearchPosition/output"
 
+
+
 for c in CaliCities:
     # /5 - Vehicles
     # /9 - Autoparts and accessories
@@ -50,6 +49,7 @@ for c in CaliCities:
     descPath = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[3]/div[2]/div[2]/div/p'
     #path of description when there is Details heading
     descWithDetails = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[5]/div[2]/div[2]/div/p'
+    descDetailsSeeMore = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[5]/div[2]/div[2]/div[1]/div/div/div/p'
     
     time.sleep(1)
 
@@ -81,14 +81,33 @@ for c in CaliCities:
 
         time.sleep(5)
 
+        #GET PRODUCT ID
+        url = driver.current_url
+        parts = url.split("/")
+        productID = parts[-1]
+        print("Product ID: " + productID)
+
         if ("Description" in driver.page_source):
             try :
                 details_element = driver.find_element(By.XPATH, "//*[contains(text(), 'Details')]")
             # Check if the "details" is displayed
                 if details_element.is_displayed():
                     print("DETAILS BLOCK") #debugging
-                    descriptionText = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, descWithDetails))).text
-                    print(descriptionText)
+                    try:
+                        #Details has a "See More" description
+                        seeMore_element = driver.find_element(By.XPATH, "//*[contains(text(), 'See more')]")
+                        time.sleep(1)
+                        seeMore_element.click()
+                        time.sleep(2)
+                        print("IN SEE MORE - DETAILS")
+                        description_element = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, descDetailsSeeMore)))
+                        descriptionText = description_element.text
+                        print(descriptionText)
+                    except:
+                        #Normal Description
+                        descriptionText = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, descWithDetails))).text
+                        
+                        print(descriptionText)
             except:
                 #either going to be a description with "see more", or normal
                 try:
@@ -150,11 +169,11 @@ for c in CaliCities:
         except: 
             print("Username: No username")
 
-        #GET PRODUCT ID
+        """ #GET PRODUCT ID
         url = driver.current_url
         parts = url.split("/")
         productID = parts[-1]
-        print("Product ID: " + productID)
+        print("Product ID: " + productID) """
         
 
         #DETAILS
@@ -205,32 +224,32 @@ for c in CaliCities:
         try:
             newdirectory = myDirectoryPath + "/" + productID[0:productID.find("?")]
             os.makedirs(newdirectory)
-            file = open(newdirectory + "/post.txt", "w")
+            file = open(newdirectory + "/post.txt", "w", encoding='utf-8')
             file.write(name)
             file.close()
 
-            file = open(newdirectory + "/date.txt", "w")
+            file = open(newdirectory + "/date.txt", "w", encoding='utf-8')
             file.write(systemTime + "\n")
             file.write(websiteTime)
             file.close()
 
-            file = open(newdirectory + "/username.txt", "w")
+            file = open(newdirectory + "/username.txt", "w", encoding='utf-8')
             file.write(username)
             file.close()
 
-            file = open(newdirectory + "/region.txt", "w")
+            file = open(newdirectory + "/region.txt", "w", encoding='utf-8')
             file.write(region)
             file.close()
 
-            file = open(newdirectory + "/description.txt", "w")
+            file = open(newdirectory + "/description.txt", "w", encoding='utf-8')
             file.write(descriptionText)
             file.close()
 
-            file = open(newdirectory + "/price.txt", "w")
+            file = open(newdirectory + "/price.txt", "w", encoding='utf-8')
             file.write(price)
             file.close()
 
-            file = open(newdirectory + "/images.txt", "w")
+            file = open(newdirectory + "/images.txt", "w", encoding='utf-8')
             for img in image_urls:
                 file.write(img + "\n" )
             file.close()
