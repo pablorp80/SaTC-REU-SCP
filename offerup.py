@@ -1,4 +1,4 @@
-#TODO: will this work if the word "details" is in the description?
+#will this work if the word "details" is in the description?
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -16,6 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 import datetime
+from os import chdir
 
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
@@ -26,7 +27,13 @@ Tcities = {"houston", "dallas", "waco", "lubbock", "austin"}
 CaliCities = {"san_francisco", "oakland", "east_los_angeles", "bakersfield", "san_jose", "san_diego", "sacramento"}
 curlRoot = "https://offerup.com/explore/sck/ca/"
 
-myDirectoryPath = "C:/Users/Misty Kurien/Documents/Baylor/Sophomore Spring/ResearchPosition/output"
+myDirectoryPath = os.path.dirname(os.path.abspath(__file__))
+myDirectoryPath = myDirectoryPath + "/output"
+
+if (not os.path.isdir(myDirectoryPath)):
+    os.mkdir(myDirectoryPath)
+
+chdir(myDirectoryPath)
 
 
 
@@ -73,6 +80,16 @@ for c in CaliCities:
         #element.click()
         #time.sleep(1)
         itemText = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, item1))).get_attribute("aria-label")
+        href =  WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, item1))).get_attribute("href")
+        href = href[href.find('/detail/')+len('/detail/'):href.find('?cid')]
+        print(href) #this is the link listed on the offerup home page
+
+        if (os.path.exists(myDirectoryPath+"/"+href)):
+                print("folder already exists. going to next one")
+                a += 1 # increment anchor
+                item1 = genericPath + str(a) + "]"
+                driver.get(curl)
+                continue
         
         
         element.click() 
