@@ -1,4 +1,7 @@
-#will this work if the word "details" is in the description?
+#fixme : TO DO NOW:
+# catch if there is no description at all. 
+# something wrong with scroll descriptions. maybe make it the first test case.
+# check out a scroll method
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -17,6 +20,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 import datetime
 from os import chdir
+import random
 
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
@@ -29,6 +33,7 @@ curlRoot = "https://offerup.com/explore/sck/ca/"
 
 myDirectoryPath = os.path.dirname(os.path.abspath(__file__))
 myDirectoryPath = myDirectoryPath + "/output"
+
 
 if (not os.path.isdir(myDirectoryPath)):
     os.mkdir(myDirectoryPath)
@@ -48,7 +53,7 @@ for c in CaliCities:
     
     curl= curlRoot + c + "/5/9"
     driver.get(curl)
-    time.sleep(1)
+    time.sleep(random.uniform(1, 5))
     
     genericPath = '//*[@id="__next"]/div[5]/div[2]/div[3]/main/div[3]/div/div[1]/div/a['
 
@@ -58,7 +63,7 @@ for c in CaliCities:
     descWithDetails = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[5]/div[2]/div[2]/div/p'
     descDetailsSeeMore = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[5]/div[2]/div[2]/div[1]/div/div/div/p'
     
-    time.sleep(1)
+    time.sleep(random.uniform(1, 5))
 
     while (True):
         item1 = genericPath + str(a) + "]"
@@ -113,9 +118,9 @@ for c in CaliCities:
                     try:
                         #Details has a "See More" description
                         seeMore_element = driver.find_element(By.XPATH, "//*[contains(text(), 'See more')]")
-                        time.sleep(1)
+                        time.sleep(random.uniform(1, 5))
                         seeMore_element.click()
-                        time.sleep(2)
+                        time.sleep(random.uniform(2, 5))
                         print("IN SEE MORE - DETAILS")
                         description_element = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, descDetailsSeeMore)))
                         descriptionText = description_element.text
@@ -130,9 +135,9 @@ for c in CaliCities:
                 try:
                     #Prints this if Description has a "see more"
                     seeMore_element = driver.find_element(By.XPATH, "//*[contains(text(), 'See more')]")
-                    time.sleep(1)
+                    time.sleep(random.uniform(1, 5))
                     seeMore_element.click()
-                    time.sleep(2)
+                    time.sleep(random.uniform(2, 5))
                     print("IN SEE MORE")
                     #//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[3]/div[2]/div[2]/div[1]/div/div/div/p/text()
                     descPath2 = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[3]/div[2]/div[2]/div[1]/div/div/div/p'
@@ -277,7 +282,7 @@ for c in CaliCities:
 
 
         print("\n ********* \n")
-        time.sleep(1)
+        time.sleep(random.uniform(1, 5))
         a += 1 # increment anchor
         item1 = genericPath + str(a) + "]"
         driver.get(curl)
