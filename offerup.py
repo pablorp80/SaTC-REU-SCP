@@ -1,7 +1,5 @@
 #fixme : TO DO NOW:
-# catch if there is no description at all. 
-# something wrong with scroll descriptions. maybe make it the first test case.
-# check out a scroll method
+# willl this work if the word "details" is in the description?
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
