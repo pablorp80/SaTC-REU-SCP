@@ -9,6 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.service import Service
 import random as rand
+from bs4 import *
 
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
@@ -19,7 +20,7 @@ time.sleep(5)
 # one city at a time rather than treating it as a true set
 #'sanantonio', 'austin', 'houston','lubbock', 'dallas', 'waco',
 # 'newyork', 'losangeles', 'sacramento', 'sfbay', 'lubbock'
-wcities = {'houston'}
+wcities = {'dallas'}
 
 # non-working cities, have a different layout
 #nwcities = {'detroit', 'chicago', 'stlouis','memphis', 'baltimore', 'milwaukee', }
@@ -30,20 +31,88 @@ count = 1
 # make a directory to store the files if it doesn't exist
 current_dir = os.path.dirname(os.path.abspath(__file__))
 current_dir = current_dir + "/itemdata"
+folders = []
 if (not os.path.isdir(current_dir)):
     os.mkdir(current_dir)
-chdir(current_dir)
+    folders = []
+# get each folder name in the directory
+else:
+    folders = os.listdir(current_dir)
+
+
+# print('FOLDERS: ')
+# for f in folders:
+#     print(f)
+
 
 # iterate through cities
 for c in wcities:
-    # just so I can listen and
-    os.system("say NEW CITY WOOHOOWOOHOO")
     print('NEW CITY: ' + c + '!')
     curl = 'https://' + c + '.craigslist.org'
     driver.get(curl)
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located((By.LINK_TEXT, 'auto parts')))
-    element = driver.find_element(By.LINK_TEXT, 'auto parts').click()
+
+    element = driver.find_element(By.LINK_TEXT, 'auto parts')
+    time.sleep(5)
+    driver.execute_script("arguments[0].click();", element)
+
+    time.sleep(15)
+    allRecorded = True
+    doneForCity = False
+    pages_skipped = 0
+    while (allRecorded):
+        try:
+            list = driver.find_element(
+                By.XPATH, '//*[@id="search-results-page-1"]')
+            html = list.get_attribute("innerHTML")
+            soup = BeautifulSoup(html, features="html.parser")
+            anchors = soup.findAll('a')
+
+            ids = []
+            if (anchors == []):
+                print('empty anchor')
+            else:
+                for a in anchors:
+                    # get the id of the item
+                    last_slash = a['href'].rfind('/')
+
+                    id = a['href'][last_slash + 1:-5]
+                    ids.append(id)
+                    if id not in folders:
+                        print('NEW ITEM: ' + id)
+                        allRecorded = False
+
+            if (allRecorded):
+                # get the next page
+                pages_skipped += 1
+                print('skipped ' + str(pages_skipped) + ' pages')
+                try:
+                    # get the current url
+                    current_url = driver.current_url
+                    next_page_button = WebDriverWait(driver, 30).until(EC.element_to_be_clickable(
+                        (By.XPATH, '//*[@id="search-toolbars-1"]/div[2]/button[3]')))
+
+                    driver.execute_script(
+                        "arguments[0].click();", next_page_button)
+
+                    # wait for the page to load
+                    time.sleep(5)
+
+                    # check if the url changed
+                    if (driver.current_url == current_url):
+                        doneForCity = True
+                        break
+                except:
+                    break
+        except:
+            print('couldnt get html')
+            break
+
+    if (doneForCity):
+        print('All items recorded for ' + c)
+        continue
+
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located((By.CLASS_NAME, 'titlestring')))
     x = driver.find_element(
@@ -152,9 +221,9 @@ for c in wcities:
             (By.XPATH, '/html/body/section/section/header/div[1]/div/a[3]')))
         # click on 'next button' and store previous url
         prev_link = cur_link
-        # sleeping for 1 second has been enough to not get flagged
 
         driver.execute_script("arguments[0].click();", ele)
-        time.sleep(rand.uniform(10, 20))
+        #time.sleep(rand.uniform(10, 20))
+        time.sleep(1)
         cur_link = driver.current_url
 driver.quit()
