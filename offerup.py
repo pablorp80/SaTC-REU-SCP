@@ -29,6 +29,18 @@ Tcities = {"houston", "dallas", "waco", "lubbock", "austin"}
 CaliCities = {"san_francisco", "oakland", "east_los_angeles", "bakersfield", "san_jose", "san_diego", "sacramento"}
 curlRoot = "https://offerup.com/explore/sck/ca/"
 
+bigCitiesRoot = "https://offerup.com/explore/sck/"
+bigCities = {"ny/new_york", "ca/los_angeles", "il/chicago", "tx/houston", "pa/philadelphia",
+             "az/phoenix", "tx/san_antonio", "ca/san_diego", "tx/dallas", "ca/san_jose", 
+             "tx/austin", "fl/jacksonville", "ca/san_francisco", "in/indianapolis", "oh/columbus",
+             "tx/fort_worth", "nc/charlotte", "wa/seattle", "co/denver", "tx/el_paso", "mi/detroit", 
+             "ma/boston", "tn/memphis", "tn/nashville", "or/portland", "ok/oklahoma_city",
+             "nv/las_vegas", "md/baltimore", "al/huntsville", "wi/milwaukee", "nm/albuquerque",
+             "az/tucson", "ca/fresno", "ca/sacramento", "mo/kansas_city", "ca/long_beach",
+             "az/mesa", "ga/atlanta", "co/colorado_springs", "va/virginia_beach", "nc/raleigh",
+             "ne/omaha", "fl/miami", "ca/oakland", "mn/minneapolis", "ok/tulsa",
+              "ks/wichita", "la/new_orleans", "tx/arlington"}
+
 myDirectoryPath = os.path.dirname(os.path.abspath(__file__))
 myDirectoryPath = myDirectoryPath + "/output"
 
@@ -40,7 +52,8 @@ chdir(myDirectoryPath)
 
 
 
-for c in CaliCities:
+#for c in CaliCities:
+for c in bigCities:
     # /5 - Vehicles
     # /9 - Autoparts and accessories
 
@@ -48,8 +61,8 @@ for c in CaliCities:
 
     print ("In "+ c + " right now!")
 
-    
-    curl= curlRoot + c + "/5/9"
+    curl = bigCitiesRoot + c + "/5/9"
+    #curl= curlRoot + c + "/5/9"
     driver.get(curl)
     time.sleep(random.uniform(1, 5))
     
