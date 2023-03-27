@@ -40,11 +40,6 @@ else:
     folders = os.listdir(current_dir)
 
 
-# print('FOLDERS: ')
-# for f in folders:
-#     print(f)
-
-
 # iterate through cities
 for c in wcities:
     print('NEW CITY: ' + c + '!')
@@ -54,10 +49,10 @@ for c in wcities:
         EC.visibility_of_element_located((By.LINK_TEXT, 'auto parts')))
 
     element = driver.find_element(By.LINK_TEXT, 'auto parts')
-    time.sleep(5)
+    time.sleep(20)
     driver.execute_script("arguments[0].click();", element)
 
-    time.sleep(15)
+    time.sleep(20)
     allRecorded = True
     doneForCity = False
     pages_skipped = 0
@@ -65,6 +60,7 @@ for c in wcities:
         try:
             list = driver.find_element(
                 By.XPATH, '//*[@id="search-results-page-1"]')
+            time.sleep(5)
             html = list.get_attribute("innerHTML")
             soup = BeautifulSoup(html, features="html.parser")
             anchors = soup.findAll('a')
