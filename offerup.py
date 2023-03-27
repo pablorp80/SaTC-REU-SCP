@@ -35,7 +35,7 @@ bigCities = {"ny/new_york", "ca/los_angeles", "il/chicago", "tx/houston", "pa/ph
              "tx/austin", "fl/jacksonville", "ca/san_francisco", "in/indianapolis", "oh/columbus",
              "tx/fort_worth", "nc/charlotte", "wa/seattle", "co/denver", "tx/el_paso", "mi/detroit", 
              "ma/boston", "tn/memphis", "tn/nashville", "or/portland", "ok/oklahoma_city",
-             "nv/las_vegas", "md/baltimore", "al/huntsville", "wi/milwaukee", "nm/albuquerque",
+             "nv/las_vegas", "md/baltimore", "ky/louisville", "wi/milwaukee", "nm/albuquerque",
              "az/tucson", "ca/fresno", "ca/sacramento", "mo/kansas_city", "ca/long_beach",
              "az/mesa", "ga/atlanta", "co/colorado_springs", "va/virginia_beach", "nc/raleigh",
              "ne/omaha", "fl/miami", "ca/oakland", "mn/minneapolis", "ok/tulsa",
@@ -257,7 +257,7 @@ for c in bigCities:
         try:
             newdirectory = myDirectoryPath + "/" + productID[0:productID.find("?")]
             os.makedirs(newdirectory)
-            file = open(newdirectory + "/post.txt", "w", encoding='utf-8')
+            file = open(newdirectory + "/title.txt", "w", encoding='utf-8')
             file.write(name)
             file.close()
 
@@ -270,7 +270,7 @@ for c in bigCities:
             file.write(username)
             file.close()
 
-            file = open(newdirectory + "/region.txt", "w", encoding='utf-8')
+            file = open(newdirectory + "/city.txt", "w", encoding='utf-8')
             file.write(region)
             file.close()
 
