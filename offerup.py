@@ -19,6 +19,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import datetime
 from os import chdir
 import random
+from itertools import cycle
 
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
@@ -53,7 +54,10 @@ chdir(myDirectoryPath)
 
 
 #for c in CaliCities:
-for c in bigCities:
+#for c in bigCities:
+
+#cycles infinitely
+for c in cycle(bigCities):
     # /5 - Vehicles
     # /9 - Autoparts and accessories
 
