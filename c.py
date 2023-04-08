@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from os import chdir
 from selenium.webdriver.chrome.service import Service
 import random as rand
+from itertools import cycle
 
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
@@ -16,7 +17,13 @@ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
 time.sleep(5)
 
-test_cities = {'dallas'}
+#'sanantonio', 'austin', 'houston','lubbock', 'dallas', 'waco',
+# 'newyork', 'losangeles', 'sacramento', 'sfbay', 'lubbock', 'phoenix', 'seattle', 'charlotte', 'denver', 'boston', 'cleveland'
+# 'minneapolis', 'portland'
+test_cities = {'sanantonio', 'austin', 'houston', 'lubbock', 'dallas'
+               , 'waco', 'newyork', 'losangeles', 'sacramento', 'sfbay', 
+               'lubbock', 'phoenix', 'seattle', 'charlotte', 'denver', 
+               'boston', 'cleveland', 'minneapolis', 'portland'}
 
 count = 1
 
@@ -35,7 +42,7 @@ else:
 ################## ITERATE THROUGH CITIES ##################
 
 
-for c in test_cities:
+for c in cycle(test_cities):
     print('NEW CITY: ' + c + '!')
     curl = 'https://' + c + '.craigslist.org'
     driver.get(curl)
@@ -85,6 +92,7 @@ for c in test_cities:
                 page_url = driver.current_url
                 for i in id_set:
                     if (i not in folders):
+                        folders.append(i)
                         url = 'https://' + c + '.craigslist.org/pts/' + i + '.html'
                         driver.get(url)
                         time.sleep(.2)
@@ -211,10 +219,6 @@ for c in test_cities:
                     time.sleep(15)
 
                 # check if the url changed
-                    print('\n\n\n\n')
-                    print(driver.current_url)
-                    print(current_url)
-                    print('\n\n\n\n')
 
                     if (driver.current_url == current_url):
                         # try to click the next page button again
