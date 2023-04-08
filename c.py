@@ -192,16 +192,36 @@ for c in test_cities:
                 try:
                     # get the current url
                     current_url = driver.current_url
-                    next_page_button = WebDriverWait(driver, 30).until(EC.element_to_be_clickable(
-                        (By.XPATH, '//*[@id="search-toolbars-1"]/div[2]/button[3]')))
 
+                    # get the next page button
+                    try:
+                        WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
+                            (By.XPATH, '/html/body/div[1]/main/div[2]/div[1]/div[2]/button[3]')))
+
+                        next_page_button = driver.find_element(
+                            By.XPATH, '/html/body/div[1]/main/div[2]/div[1]/div[2]/button[3]')
+                    except:
+                        print('no next page button')
+
+                    # click the next page button
                     driver.execute_script(
-                        "arguments[0].click();", next_page_button)
+                        'arguments[0].click()', next_page_button)
 
                 # wait for the page to load
-                    time.sleep(5)
+                    time.sleep(15)
 
                 # check if the url changed
+                    print('\n\n\n\n')
+                    print(driver.current_url)
+                    print(current_url)
+                    print('\n\n\n\n')
+
+                    if (driver.current_url == current_url):
+                        # try to click the next page button again
+                        driver.execute_script(
+                            'arguments[0].click()', next_page_button)
+                        time.sleep(15)
+
                     if (driver.current_url == current_url):
                         doneForCity = True
                         print('done for city')
