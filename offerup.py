@@ -221,6 +221,8 @@ for c in cycle(bigCities):
         region = parts[1].strip()'''
         name = itemText[0:itemText.rfind("$")]
         price = itemText[itemText.rfind("$") : itemText.rfind(" in")]
+        price = price.replace(',', '')
+        price = price.repace('$', '')
         region = itemText[itemText.find(" in") + 4 : ]
 
         print("Item name: " + name)
