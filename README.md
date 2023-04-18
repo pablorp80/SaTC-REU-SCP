@@ -1,8 +1,7 @@
 # SaTC-REU-SCP
 SaTC: Enabling Interdisciplinary Collaboration: Using NLP to Identify Suspicious Transactions in Omnichannel Online C2C Marketplaces, NSF CISE - CNS Award 2210091
 
-### Run the following commands on your command line when first running offerup.py
-
+### Run the following commands on your command line when first running
 c:\Python38\python.exe -m pip install --upgrade pip
 pip install selenium
 pip install webdriver_manager
