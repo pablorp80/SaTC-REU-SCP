@@ -235,7 +235,7 @@ for c in cycle(bigCities):
         element = driver.find_element(By.XPATH, xpath)
 
         if element:
-            websiteTime = element.text[0:(element.text.rindex("in"))]
+            websiteTime = element.text[0:(element.text.rindex(" in "))]
             print("Website time: " + websiteTime)
         else:
             print("Text containing the word 'ago' not found")
