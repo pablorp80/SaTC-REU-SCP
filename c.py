@@ -18,11 +18,11 @@ time.sleep(5)
 
 
 ##### WORKING CITIES #####
-test_cities = {'sanantonio', 'austin', 'houston', 'lubbock'
-               , 'dallas', 'waco', 'newyork', 'losangeles'
-               , 'sacramento', 'sfbay','lubbock', 'phoenix', 
-               'seattle', 'charlotte', 'denver','boston', 
-               'cleveland', 'minneapolis', 'portland'}
+# test_cities = {'sanantonio', 'austin', 'houston', 'lubbock', 'dallas', 'waco', 'newyork', 'losangeles', 'sacramento', 'sfbay', 'lubbock', 'phoenix',
+#                'seattle', 'charlotte', 'denver', 'boston',
+#                'cleveland', 'minneapolis', 'portland'}
+
+test_cities = {'waco', 'lubbock'}
 
 
 ## NUMBER OF ITEMS, JUST FOR TESTING PURPOSES ##
@@ -103,7 +103,9 @@ for c in cycle(test_cities):
 
                         url = 'https://' + c + '.craigslist.org/pts/' + i + '.html'
                         driver.get(url)
-                        time.sleep(.2)
+                        # sleep random uniform time betwen 10 and 20 seconds
+                        #time.sleep(rand.uniform(10, 20))
+                        time.sleep(2)
 
                         ################## CHECK IF ITEM EXISTS ##################
                         title_test = driver.find_elements(
@@ -223,6 +225,8 @@ for c in cycle(test_cities):
                 #### GO BACK TO THE ITEM LISTING PAGE ONCE ALL ITEMS HAVE BEEN SCRAPED #####
                 driver.get(page_url)
 
+                time.sleep(10)
+
                 ########## GO TO THE NEXT PAGE IF THERE IS ONE ##########
 
                 pages_visited += 1
@@ -231,30 +235,36 @@ for c in cycle(test_cities):
                     #### GET CURRENT URL ####
                     current_url = driver.current_url
 
-                    ## GET NEXT PAGE BUTTON ##
+                    ## Get next page URL ##
                     try:
-                        WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
-                            (By.XPATH, '/html/body/div[1]/main/div[2]/div[1]/div[2]/button[3]')))
+                        def find_second_instance(string, char='~'):
+                            first_instance = string.find(char)
+                            if first_instance == -1:
+                                return -1
 
-                        next_page_button = driver.find_element(
-                            By.XPATH, '/html/body/div[1]/main/div[2]/div[1]/div[2]/button[3]')
+                            second_instance = string.find(
+                                char, first_instance + 1)
+                            return second_instance
+
+                        position = find_second_instance(current_url)
+
+                    # Exract the first "0" after the found position
+                        number = int(current_url[position + 1])
+
+                    # Increment the number
+                        number += 1
+
+                    # Replace the old number with the incremented number in the URL
+                        new_url = current_url[:position + 1] + \
+                            str(number) + current_url[position + 2:]
                     except:
-                        print('no next page button')
+                        print('new page failed')
 
-                    #### CLICK THE NEXT PAGE BUTTON, WAIT TO LOAD ####
-                    driver.execute_script(
-                        'arguments[0].click()', next_page_button)
+                    driver.get(new_url)
 
                     time.sleep(15)
 
-                    ##### CHECK IF THE NEXT PAGE BUTTON CHANGED THE URL #####
-                    if (driver.current_url == current_url):
-                        # try to click the next page button again
-                        driver.execute_script(
-                            'arguments[0].click()', next_page_button)
-                        time.sleep(15)
-
-                    ##### IF THE BUTTON DIDN'T CHANGE THE URL, TRY IT AGAIN #####
+                    ##### CHECK IF THE NEW URL IS A NEW PAGE #####
                     if (driver.current_url == current_url):
                         doneForCity = True
                         print('done for city')
@@ -267,7 +277,54 @@ for c in cycle(test_cities):
                     break
 
             else:
-                print('all recorded for page')
+                pages_visited += 1
+                print('visited ' + str(pages_visited) + ' pages')
+                try:
+                    #### GET CURRENT URL ####
+                    current_url = driver.current_url
+
+                    ## GET NEXT PAGE URL ##
+                    try:
+
+                        def find_second_instance(string, char='~'):
+                            first_instance = string.find(char)
+                            if first_instance == -1:
+                                return -1
+
+                            second_instance = string.find(
+                                char, first_instance + 1)
+                            return second_instance
+
+                        position = find_second_instance(current_url)
+
+                    # Exract the first "0" after the found position
+                        number = int([position + 1])
+
+                    # Increment the number
+                        number += 1
+
+                    # Replace the old number with the incremented number in the URL
+                        new_url = url[:position + 1] + \
+                            str(number) + url[position + 2:]
+                    except:
+                        print('no next page button')
+
+                    driver.get(new_url)
+
+                    time.sleep(15)
+
+                    ##### CHECK IF THE NEXT PAGE BUTTON CHANGED THE URL #####
+                    if (driver.current_url == current_url):
+                        doneForCity = True
+                        print('done for city')
+                        break
+
+                    ##### IF THE BUTTON DID CHANGE THE URL, CONTINUE TO THE NEXT PAGE #####
+                    else:
+                        allRecorded = True
+                except:
+                    break
         except:
             print('couldnt get html')
             break
+
