@@ -222,7 +222,7 @@ for c in cycle(bigCities):
         name = itemText[0:itemText.rfind("$")]
         price = itemText[itemText.rfind("$") : itemText.rfind(" in")]
         price = price.replace(',', '')
-        price = price.repace('$', '')
+        price = price.replace('$', '')
         region = itemText[itemText.find(" in") + 4 : ]
 
         print("Item name: " + name)
@@ -304,5 +304,4 @@ for c in cycle(bigCities):
         item1 = genericPath + str(a) + "]"
         driver.get(curl)
         
-
 
