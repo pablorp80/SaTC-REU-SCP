@@ -9,28 +9,31 @@ from bs4 import *
 from random import randrange
 import wget
 import os
-
-#now importing
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.service import Service
 import datetime
 from os import chdir
 import random
 from itertools import cycle
 
-chrome_options = Options()
-chrome_options.add_experimental_option("detach", True)
-driver = webdriver.Chrome(ChromeDriverManager().install())
 
-#reads san antonio city is covered under houston
-Tcities = {"houston", "dallas", "waco", "lubbock", "austin"}
-CaliCities = {"san_francisco", "oakland", "east_los_angeles", "bakersfield", "san_jose", "san_diego", "sacramento"}
-curlRoot = "https://offerup.com/explore/sck/ca/"
+service = Service(ChromeDriverManager().install())
 
+# Create ChromeOptions object
+options = webdriver.ChromeOptions()
+
+# Create a WebDriver instance
+driver = webdriver.Chrome(service=service, options=options)
+
+
+#the basic URL for offerup
 bigCitiesRoot = "https://offerup.com/explore/sck/"
+#50 cities
+
 bigCities = {"ny/new_york", "ca/los_angeles", "il/chicago", "tx/houston", "pa/philadelphia",
              "az/phoenix", "tx/san_antonio", "ca/san_diego", "tx/dallas", "ca/san_jose", 
              "tx/austin", "fl/jacksonville", "ca/san_francisco", "in/indianapolis", "oh/columbus",
@@ -42,29 +45,26 @@ bigCities = {"ny/new_york", "ca/los_angeles", "il/chicago", "tx/houston", "pa/ph
              "ne/omaha", "fl/miami", "ca/oakland", "mn/minneapolis", "ok/tulsa",
               "ks/wichita", "la/new_orleans", "tx/arlington"}
 
+#getting current directory
 myDirectoryPath = os.path.dirname(os.path.abspath(__file__))
 myDirectoryPath = myDirectoryPath + "/output"
 
-
+#makes a new output folder if it doesn't exist
 if (not os.path.isdir(myDirectoryPath)):
     os.mkdir(myDirectoryPath)
 
 chdir(myDirectoryPath)
 
-
-
-#for c in CaliCities:
-#for c in bigCities:
-
 #cycles infinitely
 for c in cycle(bigCities):
-    # /5 - Vehicles
-    # /9 - Autoparts and accessories
+    
 
     a = 1 # anchor counter
 
     print ("In "+ c + " right now!")
 
+    # /5 - Vehicles
+    # /9 - Autoparts and accessories
     curl = bigCitiesRoot + c + "/5/9"
     #curl= curlRoot + c + "/5/9"
     driver.get(curl)
@@ -96,9 +96,6 @@ for c in cycle(bigCities):
         print ("ITERATION " + str(a))
         
         #PRINT NAME, PRICE, LOCATION
-        #print(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, item1))).get_attribute("aria-label"))
-        #element.click()
-        #time.sleep(1)
         itemText = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, item1))).get_attribute("aria-label")
         href =  WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, item1))).get_attribute("href")
         href = href[href.find('/detail/')+len('/detail/'):href.find('?cid')]
@@ -154,7 +151,6 @@ for c in cycle(bigCities):
                     seeMore_element.click()
                     time.sleep(random.uniform(2, 5))
                     print("IN SEE MORE")
-                    #//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[3]/div[2]/div[2]/div[1]/div/div/div/p/text()
                     descPath2 = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[3]/div[2]/div[2]/div[1]/div/div/div/p'
 
  
@@ -162,9 +158,6 @@ for c in cycle(bigCities):
                     description_element = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, descPath2)))
                     descriptionText = description_element.text
                     print(descriptionText)
-                    # Retrieve the text of the description element
-                   # description_text = description_element.text
-                    #print(description_text)
                     
                 except:
                     #Description without scroll (basic case)
@@ -175,50 +168,23 @@ for c in cycle(bigCities):
         else:
             descriptionText = "No description"
             print("No description")
-        """ descPath = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[3]/div[2]/div[2]/div/p'
-        descWithDetails = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[5]/div[2]/div[2]/div/p'
-        print("Description: ")
-        try:
-            #Prints this if "Details exist"
-            descriptionText = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, descWithDetails))).text
-            print(descriptionText)
-        except:
-            #Checking if "Description" exists
-            try:
-                #Prints Description
-                descriptionText =WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, descPath))).text
-                print(descriptionText)
-            except:
-                try:
-                    #Prints this if Description has a scroll bar
-                    descPath2 = '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[2]/div/div[5]/div[2]/div[2]/div[1]/div/div/div/p'
-                    descriptionText =(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, descPath2))).text)
-                    print(descriptionText)
-                except:
-                    print("No description")
-                    descriptionText = "No description" """
-
         
         #GET USER NAME
         try:
-            username = driver.find_element(By.XPATH, '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[1]/div/div[5]/button/div/div[2]/p[1]').text
+            username = driver.find_element(
+                By.XPATH, 
+                '//*[@id="__next"]/div[5]/div[2]/main/div[1]/div/div[1]/div/div[5]/button/div/div[2]/p[1]'
+                ).text
+            
             print("Username: " + username)
+
         except: 
             print("Username: No username")
 
-        """ #GET PRODUCT ID
-        url = driver.current_url
-        parts = url.split("/")
-        productID = parts[-1]
-        print("Product ID: " + productID) """
+    
         
 
         #DETAILS
-        '''parts = itemText.split("$")
-        #name = parts[0].strip()
-        #parts = parts[1].split("in")
-        #price = parts[0].strip()
-        region = parts[1].strip()'''
         name = itemText[0:itemText.rfind("$")]
         price = itemText[itemText.rfind("$") : itemText.rfind(" in")]
         price = price.replace(',', '')
