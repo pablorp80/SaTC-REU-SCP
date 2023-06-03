@@ -8,7 +8,7 @@ import os
 from bs4 import BeautifulSoup
 from os import chdir
 from selenium.webdriver.chrome.service import Service
-import random as rand
+import random
 from itertools import cycle
 
 
@@ -18,40 +18,46 @@ time.sleep(5)
 
 
 ##### WORKING CITIES #####
-# test_cities = {'sanantonio', 'austin', 'houston', 'lubbock', 'dallas', 'waco', 'newyork', 'losangeles', 'sacramento', 'sfbay', 'lubbock', 'phoenix',
-#                'seattle', 'charlotte', 'denver', 'boston',
-#                'cleveland', 'minneapolis', 'portland'}
 
-test_cities = {'waco', 'lubbock'}
+test_cities = {'sanantonio', 'austin', 'houston', 'lubbock', 'dallas',
+               'waco', 'newyork', 'losangeles', 'sacramento', 'sfbay', 'lubbock', 'phoenix',
+               'seattle', 'charlotte', 'denver', 'boston',
+               'cleveland', 'minneapolis', 'portland', 'memphis', 'detroit', 'milwaukee',
+               'baltimore', 'atlanta', 'tampa', 'wichita', 'lasvegas', 'indianapolis',
+               'chicago', 'jacksonville', 'philadelphia', 'nashville', 'elpaso', 'louisville',
+               'albuquerque', 'omaha', 'miami', 'orlando', 'stlouis', 'lincoln', 'rochester',
+               'boise', 'buffalo', 'madison', 'knoxville', 'springfield', 'syracuse',
+               'dayton', 'abilene', 'amarillo', 'delrio', 'elpaso', 'cosprings', 'boulder',
+               'fortcollins', 'ogden', 'stgeorge', 'fresno', 'monterey', 'chico', 'merced',
+               'reno', 'santabarbara', 'orangecounty', 'palmsprings', 'goldcountry', 'bakersfield'}
 
 
-## NUMBER OF ITEMS, JUST FOR TESTING PURPOSES ##
+## number of items for testing purposes ##
 count = 1
 
-##### MAKE ITEMDATA FOLDER IF IT DOESN'T EXIST #####
+##### make itemdata folder if it doesn't exist #####
 current_dir = os.path.dirname(os.path.abspath(__file__))
 current_dir = current_dir + "/itemdata"
 folders = []
 
-## IF ITEMDATA FOLDER DOESN'T EXIST, MAKE IT ##
 if (not os.path.isdir(current_dir)):
     os.mkdir(current_dir)
 
-##### GET EACH FOLDER NAME IN THE DIRECTORY #####
+##### Get each folder name in the directory #####
 else:
     folders = os.listdir(current_dir)
 
 
-################## ITERATE THROUGH CITIES IN A CYCLE ##################
+################## iterate through cities in a cycle ##################
 
 for c in cycle(test_cities):
 
-    ##### GET CRAIGSLIST AUTO PARTS PAGE FOR CITY #####
+    ##### get craigslist auto parts page for current city #####
     print('NEW CITY: ' + c + '!')
     curl = 'https://' + c + '.craigslist.org/search/pta'
     driver.get(curl)
 
-    ##### GET LIST OF ITEMS, POPULATE ID SET, SCRAPE IF NEW ITEM #####
+    ##### get list of items, populate id set, scrape if there is a new item #####
     allRecorded = True
     doneForCity = False
     pages_visited = 0
@@ -59,7 +65,7 @@ for c in cycle(test_cities):
     while (allRecorded):
         try:
 
-            ##### GET LIST OF ITEMS #####
+            ##### get list of items #####
 
             list = driver.find_element(
                 By.XPATH, '//*[@id="search-results-page-1"]')
@@ -68,38 +74,38 @@ for c in cycle(test_cities):
             soup = BeautifulSoup(html, features="html.parser")
             anchors = soup.findAll('a')
 
-            ##### POPULATE ID SET FROM ANCHORS #####
+            ##### populate id set from anchors #####
             id_set = set()
             if (anchors == []):
                 print('empty anchor')
             else:
                 for a in anchors:
 
-                    ##### EXTRACT ID #####
+                    ##### extract id #####
                     url = a['href']
                     id_start_index = url.rfind('/') + 1
                     id_end_index = id_start_index + 10
                     ten_digit_id = url[id_start_index:id_end_index]
 
-                    ##### ADD ID TO SET #####
+                    ##### add id to set #####
                     id_set.add(ten_digit_id)
                     if ten_digit_id not in folders:
                         print('new item found: ' + ten_digit_id)
                         allRecorded = False
 
-            ##### IF ALL ITEMS AREN'T RECORDED, SCRAPE THE NEW ITEMS #####
+            ##### if all items aren't recorded, add new items #####
             if (not allRecorded):
                 page_url = driver.current_url
 
                 for i in id_set:
 
-                    ######## CHECK IF ITEM IS ALREADY RECORDED ########
+                    ######## check if the item is already recorded ########
                     if (i not in folders):
 
-                        ######## MARK ITEM AS SCRAPED ########
+                        ######## mark the item as scraped ########
                         folders.append(i)
 
-                        ################## GO TO ITEM URL ##################
+                        ################## go to the url of the item ##################
 
                         url = 'https://' + c + '.craigslist.org/pts/' + i + '.html'
                         driver.get(url)
@@ -107,16 +113,16 @@ for c in cycle(test_cities):
                         #time.sleep(rand.uniform(10, 20))
                         time.sleep(2)
 
-                        ################## CHECK IF ITEM EXISTS ##################
+                        ################## check if the item exists ##################
                         title_test = driver.find_elements(
                             By.XPATH, '/html/body/div/header/nav/ul/li/p')
 
                         if (title_test != []):
-                            ##### IF ITEM DOESN'T EXIST, CONTINUE TO NEXT ITEM #####
+                            ##### if it doesn't exist, go to next item #####
                             if (title_test[0].text == 'Page Not Found'):
                                 continue
 
-                        ################## GET ITEM TITLE ##################
+                        ################## get item title ##################
 
                         try:
                             WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
@@ -126,7 +132,7 @@ for c in cycle(test_cities):
                         except:
                             title = 'unknown'
 
-                        ################## GET ITEM ID ##################
+                        ################## get item id ##################
                         try:
                             WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
                                 (By.XPATH, '/html/body/section/section/section/div[2]/p[1]')))
@@ -136,7 +142,7 @@ for c in cycle(test_cities):
                         except:
                             title = 'unknown'
 
-                        ################## GET ITEM POSTING DATE ##################
+                        ################## get item posting date ##################
 
                         try:
                             WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
@@ -149,7 +155,7 @@ for c in cycle(test_cities):
                         except:
                             date = 'unknown'
 
-                        ################## GET ITEM PRICE ##################
+                        ################## get item price ##################
 
                         p = driver.find_elements(
                             By.XPATH, '/html/body/section/section/h1/span/span[2]')
@@ -160,7 +166,7 @@ for c in cycle(test_cities):
                             if (price[0] != '$'):
                                 price = 'unknown'
 
-                        ################## GET ITEM DESCRIPTION ##################
+                        ################## get item description ##################
 
                         try:
                             WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
@@ -171,7 +177,7 @@ for c in cycle(test_cities):
                         except:
                             d = 'unknown'
 
-                        ################## GET ITEM IMAGES ##################
+                        ################## get item images ##################
 
                         images = driver.find_elements(By.XPATH, '//img')
                         # Extract the URLs of the posting images
@@ -185,7 +191,7 @@ for c in cycle(test_cities):
 
                         image_urls = get_images(image_urls)
 
-                        ################## SAVE ITEM DATA TO FILE ##################
+                        ################## save item data to file ##################
 
                         old_dir = current_dir
                         current_dir = current_dir + "/" + id
@@ -213,21 +219,21 @@ for c in cycle(test_cities):
                             else:
                                 f.write("no images")
 
-                        ################## PRINT COUNT FOR TESTING ##################
+                        ################## print item count for testing ##################
                         print(count, end=" ", flush=True)
                         count = count + 1
 
-                        ######## GO BACK TO ITEMDATA DIRECTORY ########
+                        ######## go back to itemdata directory ########
 
                         chdir(old_dir)
                         current_dir = old_dir
 
-                #### GO BACK TO THE ITEM LISTING PAGE ONCE ALL ITEMS HAVE BEEN SCRAPED #####
+                #### go back to the listing page once all items have been scraped #####
                 driver.get(page_url)
 
                 time.sleep(10)
 
-                ########## GO TO THE NEXT PAGE IF THERE IS ONE ##########
+                ########## go to the next page of items if there is one ##########
 
                 pages_visited += 1
                 print('visited ' + str(pages_visited) + ' pages')
@@ -264,13 +270,13 @@ for c in cycle(test_cities):
 
                     time.sleep(15)
 
-                    ##### CHECK IF THE NEW URL IS A NEW PAGE #####
+                    ##### check if the new url is a new page #####
                     if (driver.current_url == current_url):
                         doneForCity = True
                         print('done for city')
                         break
 
-                    ##### IF THE BUTTON DID CHANGE THE URL, CONTINUE TO THE NEXT PAGE #####
+                    ##### if the button changed the url, go to the next page #####
                     else:
                         allRecorded = True
                 except:
@@ -280,10 +286,10 @@ for c in cycle(test_cities):
                 pages_visited += 1
                 print('visited ' + str(pages_visited) + ' pages')
                 try:
-                    #### GET CURRENT URL ####
+                    #### get current url ####
                     current_url = driver.current_url
 
-                    ## GET NEXT PAGE URL ##
+                    ## get next page url (or what it would be if there was one) ##
                     try:
 
                         def find_second_instance(string, char='~'):
@@ -313,13 +319,17 @@ for c in cycle(test_cities):
 
                     time.sleep(15)
 
-                    ##### CHECK IF THE NEXT PAGE BUTTON CHANGED THE URL #####
+                    ##### check if the new link changed the url #####
                     if (driver.current_url == current_url):
                         doneForCity = True
                         print('done for city')
                         break
 
-                    ##### IF THE BUTTON DID CHANGE THE URL, CONTINUE TO THE NEXT PAGE #####
+                    # if the url didn't change, go to next city. The way craigslist
+                    # does this is that if you put in a page number that doesn't exist, it
+                    # will redirect you to the page directly before it. So in this case, we get the
+                    # URL, try to put in the URL of the next page, and if it sends us back to the URL
+                    # we were just at, we know that there are no more pages #####
                     else:
                         allRecorded = True
                 except:
@@ -327,4 +337,3 @@ for c in cycle(test_cities):
         except:
             print('couldnt get html')
             break
-
