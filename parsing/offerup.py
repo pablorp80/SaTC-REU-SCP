@@ -1,7 +1,7 @@
 import csv
 
 def get_data():
-    filepath = 'craigslist_sample_dataset_no_dup.csv'
+    filepath = 'offerup_clean_dataset.csv'
     data = []
     with open(filepath, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
