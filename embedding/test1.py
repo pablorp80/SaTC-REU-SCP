@@ -16,7 +16,7 @@ def load_and_transform_vision_data_from_web(image_urls, device):
 
     image_outputs = []
 
-    # Same transformations as in your original function
+    # Same transformations as in original function
     data_transform = transforms.Compose([
         transforms.Resize(224, interpolation=transforms.InterpolationMode.BICUBIC),
         transforms.CenterCrop(224),
@@ -26,7 +26,11 @@ def load_and_transform_vision_data_from_web(image_urls, device):
     ])
 
     for image_url in image_urls:
-        response = requests.get(image_url)
+        try:
+            response = requests.get(image_url)
+        except:
+            print('Request error for URL!')
+            return None
         image = Image.open(BytesIO(response.content)).convert("RGB")
 
         image = data_transform(image).to(device)
