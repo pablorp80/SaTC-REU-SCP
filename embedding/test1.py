@@ -6,6 +6,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 from torchvision import transforms
+from parsing.parse_craigslist import get_data
 
 # Rewritten version of imagebind.data.load_and_transform_vision_data
 # that takes urls instead of file paths, because downloading all
@@ -16,7 +17,7 @@ def load_and_transform_vision_data_from_web(image_urls, device):
 
     image_outputs = []
 
-    # Same transformations as in original function
+    # Same transformations as in your original function
     data_transform = transforms.Compose([
         transforms.Resize(224, interpolation=transforms.InterpolationMode.BICUBIC),
         transforms.CenterCrop(224),
@@ -26,11 +27,7 @@ def load_and_transform_vision_data_from_web(image_urls, device):
     ])
 
     for image_url in image_urls:
-        try:
-            response = requests.get(image_url)
-        except:
-            print('Request error for URL!')
-            return None
+        response = requests.get(image_url)
         image = Image.open(BytesIO(response.content)).convert("RGB")
 
         image = data_transform(image).to(device)
@@ -38,8 +35,10 @@ def load_and_transform_vision_data_from_web(image_urls, device):
 
     return torch.stack(image_outputs, dim=0)
 
+
 sample_title = ["MERCEDES BENZ FACTORY VINTAGE PARTS"]
-sample_images = ["https://images.craigslist.org/00V0V_9uMUlJQALlX_07K037_600x450.jpg"]
+sample_images = ["https://images.craigslist.org/00V0V_9uMUlJQALlX_07K037_600x450.jpg",
+                 "https://images.craigslist.org/00606_2I43jIw0MuD_09M0eg_600x450.jpg"]
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
@@ -47,18 +46,24 @@ model = imagebind_model.imagebind_huge(pretrained=True)
 model.eval()
 model.to(device)
 
-inputs = {
+combined_embeddings = []
+
+for url in sample_images:
+
+    inputs = {
         ModalityType.TEXT: data.load_and_transform_text(sample_title, device),
-        ModalityType.VISION: load_and_transform_vision_data_from_web(sample_images, device)
-}
+        ModalityType.VISION: load_and_transform_vision_data_from_web([url], device)
+    }
 
-with torch.no_grad():
-    embeddings = model(inputs)
+    with torch.no_grad():
+        embeddings = model(inputs)
 
-vision_embedding = embeddings[ModalityType.VISION]
-text_embedding = embeddings[ModalityType.TEXT]
+    vision_embedding = embeddings[ModalityType.VISION]
+    text_embedding = embeddings[ModalityType.TEXT]
 
-# If you want a combined embedding, you can concatenate or otherwise combine these
-combined_embedding = torch.cat((vision_embedding, text_embedding), dim=1)
+    combined_embedding = torch.cat((vision_embedding, text_embedding), dim=1)
+    combined_embeddings.append(combined_embedding)
 
-print("Combined Embedding:", combined_embedding)
+for embedding in combined_embeddings:
+    print(embedding)
+    print ('------\n\n')
