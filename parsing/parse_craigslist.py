@@ -9,16 +9,22 @@ def get_image_urls():
         reader = csv.reader(csvfile)
         next(reader, None) # skip headers
         for row in reader:
-            url_list = row[8].split(',')
+            url_list = row[8].split(' ')
             for url in url_list:
-                urls.append(url.strip())
+                urls.append(url)
+    urls = [x for x in urls if x != '']
     return urls
 def check_images(image_urls):
     success, fail = 0, 0
     for url in image_urls:
         try:
-            requests.get(url)
-            success += 1
+            response = requests.get(url)
+            # Check if the Content-Type header indicates an image
+            if 'image' in response.headers.get('Content-Type', ''):
+                success += 1
+            else:
+                print(url)
+                fail += 1
         except:
             fail += 1
     print("Success: " + str(success))
@@ -30,7 +36,7 @@ def check_images(image_urls):
 
 def main():
     urls = get_image_urls()
-    batch = urls[200:300]
+    batch = urls[:100]
     check_images(batch)
 
 if __name__ == "__main__":
