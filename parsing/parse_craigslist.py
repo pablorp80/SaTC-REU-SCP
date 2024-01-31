@@ -13,9 +13,8 @@ def get_image_urls():
             for url in url_list:
                 urls.append(url.strip())
     return urls
-
 def check_images(image_urls):
-    success, fail = 0,0
+    success, fail = 0, 0
     for url in image_urls:
         try:
             requests.get(url)
@@ -25,9 +24,14 @@ def check_images(image_urls):
     print("Success: " + str(success))
     print("Fail: " + str(fail))
 
+    with open('results.txt', 'a') as file:
+        file.write(f"{success}\n")
+        file.write(f"{fail}\n")
+
 def main():
     urls = get_image_urls()
-    check_images(urls)
+    batch = urls[200:300]
+    check_images(batch)
 
 if __name__ == "__main__":
     main()
