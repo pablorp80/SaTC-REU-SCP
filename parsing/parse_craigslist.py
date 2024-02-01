@@ -13,8 +13,8 @@ def get_image_file_names():
         for row in reader:
             id = row[0]
             images = row[8]
-            processed_data_str = images.replace('""', '"')[1:-1]
-            data_map = json.loads('{' + processed_data_str + '}')
+            processed_data_str = images.replace('""', '"')
+            data_map = json.loads(processed_data_str)
             file_names = list(data_map.values())
             id_to_image_names[id] = file_names
 
