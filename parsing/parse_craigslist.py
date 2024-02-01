@@ -9,16 +9,20 @@ def get_image_file_names():
     with open(filepath, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         next(reader, None) # skip headers
-        id_to_image_names = {}
+        posts = []
         for row in reader:
+            id_title_images = tuple()
             id = row[0]
+            title = row[4]
             images = row[8]
+
             processed_data_str = images.replace('""', '"')
             data_map = json.loads(processed_data_str)
             file_names = list(data_map.values())
-            id_to_image_names[id] = file_names
+            id_title_images = id, title, file_names
+            posts.append(id_title_images)
 
-    return id_to_image_names
+    return posts
 
 
 def check_images(image_urls):
@@ -43,9 +47,9 @@ def check_images(image_urls):
         file.write(f"{fail}\n")
 
 def main():
-    id_to_images = get_image_file_names()
-    post_id, images = random.choice(list(id_to_images.items()))
-    print(post_id + '\n')
+    id_title_imagepaths = get_image_file_names()
+    post_id, title, images = random.choice(id_title_imagepaths)
+    print(post_id + '\n\n' + title + '\n\n')
     for image in images:
         print(image)
 
