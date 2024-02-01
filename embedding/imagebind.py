@@ -15,11 +15,11 @@ model.to(device)
 
 combined_embeddings = []
 
-for url in sample_images:
+for image in sample_images:
 
     inputs = {
         ModalityType.TEXT: data.load_and_transform_text(sample_title, device),
-        ModalityType.VISION: data.load_and_transform_vision_data([url], device)
+        ModalityType.VISION: data.load_and_transform_vision_data([image], device)
     }
 
     with torch.no_grad():
