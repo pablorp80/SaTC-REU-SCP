@@ -24,28 +24,6 @@ def get_image_file_names():
 
     return posts
 
-
-def check_images(image_urls):
-    success, fail = 0, 0
-    count = 0
-    for url in image_urls:
-        count += 1
-        print(count)
-        try:
-            response = requests.get(url)
-            if 'image' in response.headers.get('Content-Type', ''):
-                success += 1
-            else:
-                fail += 1
-        except:
-            fail += 1
-    print("Success: " + str(success))
-    print("Fail: " + str(fail))
-
-    with open('results2.txt', 'a') as file:
-        file.write(f"{success}\n")
-        file.write(f"{fail}\n")
-
 def main():
     id_title_imagepaths = get_image_file_names()
     post_id, title, images = random.choice(id_title_imagepaths)
