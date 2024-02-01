@@ -1,6 +1,5 @@
 import csv
 import random
-import requests
 import json
 
 # format: [id, date, city, ti_n, title, po_n, post, pi_n, pictures, price]
@@ -30,7 +29,6 @@ def main():
     print(post_id + '\n\n' + title + '\n\n')
     for image in images:
         print(image)
-
 
 if __name__ == "__main__":
     main()

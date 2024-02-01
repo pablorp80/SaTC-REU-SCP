@@ -2,7 +2,7 @@ import csv
 import random
 import json
 
-# format: [id, date, city, ti_n, title, po_n, post, pi_n, pictures, price]
+#format: [index,date,city,ti_n,title,po_n,post,pi_n,pictures,price,username]
 def get_image_file_names():
     filepath = 'offerup_sample_data.csv'
     with open(filepath, newline='', encoding='utf-8') as csvfile:
@@ -28,7 +28,6 @@ def main():
     print(post_id + '\n\n' + title + '\n\n')
     for image in images:
         print(image)
-
 
 if __name__ == "__main__":
     main()
