@@ -4,6 +4,8 @@ from imagebind.models import imagebind_model
 from imagebind.models.imagebind_model import ModalityType
 import pandas as pd
 import os
+import random
+from parsing.parse_craigslist import get_image_file_names
 
 def create_embeddings(model, device, text, images):
     combined_embeddings_list = []  # Store flattened embeddings here
@@ -48,7 +50,15 @@ def initialize_model():
     return model,device
 
 def get_data():
-    # TODO use parsing scripts to get real data
+
+    # TODO - get image files on a system that can handle the model
+    id_title_imagepaths = get_image_file_names()
+    post_id, title, images = random.choice(id_title_imagepaths)
+    print(post_id + '\n\n' + title + '\n\n')
+    for image in images:
+        print(image)
+
+    # TODO - get rid of this sample data once you start using real posts
     sample_title = ["MERCEDES BENZ FACTORY VINTAGE PARTS"]
     sample_images = [".assets/test_image_1.jpg",
                  ".assets/test_image_2.jpeg"]
