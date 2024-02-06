@@ -13,22 +13,27 @@ def get_image_file_names():
             id_title_images = tuple()
             id = row[0]
             title = row[4]
+            description = row[6]
             images = row[8]
+
+            text = title + '\n' + description
 
             processed_data_str = images.replace('""', '"')
             data_map = json.loads(processed_data_str)
             file_names = list(data_map.values())
-            id_title_images = id, title, file_names
+            id_title_images = id, text, file_names
             posts.append(id_title_images)
 
     return posts
 
 def main():
     id_title_imagepaths = get_image_file_names()
-    post_id, title, images = random.choice(id_title_imagepaths)
-    print(post_id + '\n\n' + title + '\n\n')
+    post_id, text, images = random.choice(id_title_imagepaths)
+    print(post_id + '\n\n' + text + '\n\n')
+    images = [x for x in images if x] # there were lots of nones
     for image in images:
         print(image)
 
 if __name__ == "__main__":
     main()
+
