@@ -8,31 +8,35 @@ import random
 from parsing.parse_craigslist import get_image_file_names
 
 def create_embeddings(model, device, text, images):
-    combined_embeddings_list = []  # Store flattened embeddings here
 
+    image_embedding_sum = None
+    num_images = len(images)
     for image in images:
-
-        inputs = {
-            ModalityType.TEXT: data.load_and_transform_text(text, device),
-            ModalityType.VISION: data.load_and_transform_vision_data([image], device)
-        }
-
+        vision = data.load_and_transform_vision_data([image], device)
         with torch.no_grad():
-            embeddings = model(inputs)
+            vision_embedding = model({ModalityType.VISION: vision})[ModalityType.VISION]
+        if image_embedding_sum is None:
+            image_embedding_sum = vision_embedding
+        else:
+            image_embedding_sum += vision_embedding
 
-        vision_embedding = embeddings[ModalityType.VISION]
-        text_embedding = embeddings[ModalityType.TEXT]
+    image_embedding_avg = image_embedding_sum / num_images
 
-        combined_embedding = torch.cat((vision_embedding, text_embedding), dim=1)
-        combined_embeddings_list.append(combined_embedding)
+    with torch.no_grad():
+        text_embedding = model({ModalityType.TEXT:
+            data.load_and_transform_text(text, device)})[ModalityType.TEXT]
 
-    return combined_embeddings_list
+    combined_embedding_average = (image_embedding_avg + text_embedding) / 2
+
+    return combined_embedding_average
 
 def flatten_embeddings(embeddings):
     flattened_embeddings = []
     for tensor in embeddings:
         flattened_tensor = tensor.cpu().numpy().flatten()
         flattened_embeddings.append(flattened_tensor.tolist())
+        print(flattened_tensor.shape)
+
     return flattened_embeddings
 
 def write_embeddings(flattened_embeddings):
@@ -51,12 +55,12 @@ def initialize_model():
 
 def get_data():
 
-    # TODO - get image files on a system that can handle the model
-    id_title_imagepaths = get_image_file_names()
-    post_id, text, images = random.choice(id_title_imagepaths)
-    print(post_id + '\n\n' + text + '\n\n')
-    for image in images:
-        print(image)
+    ## TODO - get image files on a system that can handle the model
+    #id_title_imagepaths = get_image_file_names()
+    #post_id, title, images = random.choice(id_title_imagepaths)
+    #print(post_id + '\n\n' + title + '\n\n')
+    #for image in images:
+    #    print(image)
 
     # TODO - get rid of this sample data once you start using real posts
     sample_title = ["MERCEDES BENZ FACTORY VINTAGE PARTS"]

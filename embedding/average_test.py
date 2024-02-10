@@ -23,8 +23,9 @@ def create_embeddings(model, device, text, images):
         vision_embedding = embeddings[ModalityType.VISION]
         text_embedding = embeddings[ModalityType.TEXT]
 
-        combined_embedding = torch.cat((vision_embedding, text_embedding), dim=1)
-        combined_embeddings_list.append(combined_embedding)
+        embedding_average = (text_embedding + vision_embedding) / 2
+
+        combined_embeddings_list.append(embedding_average)
 
     return combined_embeddings_list
 
@@ -33,6 +34,8 @@ def flatten_embeddings(embeddings):
     for tensor in embeddings:
         flattened_tensor = tensor.cpu().numpy().flatten()
         flattened_embeddings.append(flattened_tensor.tolist())
+        print(flattened_tensor.shape)
+
     return flattened_embeddings
 
 def write_embeddings(flattened_embeddings):
@@ -51,12 +54,12 @@ def initialize_model():
 
 def get_data():
 
-    # TODO - get image files on a system that can handle the model
-    id_title_imagepaths = get_image_file_names()
-    post_id, text, images = random.choice(id_title_imagepaths)
-    print(post_id + '\n\n' + text + '\n\n')
-    for image in images:
-        print(image)
+    ## TODO - get image files on a system that can handle the model
+    #id_title_imagepaths = get_image_file_names()
+    #post_id, title, images = random.choice(id_title_imagepaths)
+    #print(post_id + '\n\n' + title + '\n\n')
+    #for image in images:
+    #    print(image)
 
     # TODO - get rid of this sample data once you start using real posts
     sample_title = ["MERCEDES BENZ FACTORY VINTAGE PARTS"]
