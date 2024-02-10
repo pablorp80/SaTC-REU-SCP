@@ -7,10 +7,12 @@ import os
 import random
 from parsing.parse_craigslist import get_image_file_names
 
-def create_embeddings(model, device, text, images):
+def create_embedding(model, device, text, images):
     combined_embeddings_list = []  # Store flattened embeddings here
 
     for image in images:
+
+        image = '.assets/images/' + image
 
         inputs = {
             ModalityType.TEXT: data.load_and_transform_text(text, device),
@@ -29,21 +31,21 @@ def create_embeddings(model, device, text, images):
 
     return combined_embeddings_list
 
-def flatten_embeddings(embeddings):
-    flattened_embeddings = []
-    for tensor in embeddings:
-        flattened_tensor = tensor.cpu().numpy().flatten()
-        flattened_embeddings.append(flattened_tensor.tolist())
-        print(flattened_tensor.shape)
-
-    return flattened_embeddings
+def flatten_embedding(embedding):
+    flattened_tensor = embedding.cpu().numpy().flatten()
+    return flattened_tensor
 
 def write_embeddings(flattened_embeddings):
-    embeddings_df = pd.DataFrame(flattened_embeddings) # create pandas dataframe
-    csv_file_path = 'embeddings.csv'
-    write_header = not os.path.exists(csv_file_path) # don't write header every time...
-    embeddings_df.to_csv(csv_file_path, mode='a', index=False, header=write_header)
-    print(f"Embeddings written to {csv_file_path}")
+    try:
+        embeddings_df = pd.DataFrame(flattened_embeddings) # create pandas dataframe
+        csv_file_path = 'embeddings.csv'
+        write_header = not os.path.exists(csv_file_path) # don't write header every time...
+        embeddings_df.to_csv(csv_file_path, mode='a', index=False, header=write_header)
+        print(f"Embeddings written to {csv_file_path}")
+        return True
+    except:
+        print("Error writing embeddings")
+        return False
 
 def initialize_model():
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -54,25 +56,35 @@ def initialize_model():
 
 def get_data():
 
-    ## TODO - get image files on a system that can handle the model
-    #id_title_imagepaths = get_image_file_names()
-    #post_id, title, images = random.choice(id_title_imagepaths)
-    #print(post_id + '\n\n' + title + '\n\n')
-    #for image in images:
-    #    print(image)
+    id_text_imagepaths = get_image_file_names()
+    valid_posts = []
+    for post in id_text_imagepaths:
+        _, _, image_paths = post
+        if image_paths:
+            if all(os.path.exists('.assets/images/' + image) for image in image_paths):
+                valid_posts.append(post)
 
-    # TODO - get rid of this sample data once you start using real posts
-    sample_title = ["MERCEDES BENZ FACTORY VINTAGE PARTS"]
-    sample_images = [".assets/test_image_1.jpg",
-                 ".assets/test_image_2.jpeg"]
-    return sample_title, sample_images
+    return valid_posts
 
 def main():
-    text,images = get_data()
+    posts = get_data()
     model,device = initialize_model()
-    embeddings = create_embeddings(model, device, text, images)
-    flattened_embeddings = flatten_embeddings(embeddings)
-    write_embeddings(flattened_embeddings)
+    with open('ids.txt', 'r') as f:
+        ids = [line.strip() for line in f]
+
+    new_ids = set()
+    for post in posts:
+        curid, text, images = post
+        if curid not in ids:
+            post_embedding = create_embedding(model, device, text, images)
+            flattened = flatten_embedding(post_embedding)
+            if write_embeddings(flattened):
+                new_ids.add(curid)
+        else:
+            print('duplicate not written')
+    with open('ids.txt', 'a') as f:
+        for post_id in new_ids:
+            f.write(post_id + '\n')
 
 if __name__ == "__main__":
     main()
