@@ -4,7 +4,6 @@ from imagebind.models import imagebind_model
 from imagebind.models.imagebind_model import ModalityType
 import pandas as pd
 import os
-import random
 from parsing.parse_craigslist import get_image_file_names
 
 def create_embedding(model, device, text, images):
@@ -17,22 +16,21 @@ def create_embedding(model, device, text, images):
     with torch.no_grad():
         embedding = model(inputs)
 
-    image_embedding = embedding[ModalityType.VISION]
-    image_embedding_avg = torch.mean(image_embedding, dim=0)
+    image_embedding_stack = embedding[ModalityType.VISION]
+    image_embedding_avg = torch.mean(image_embedding_stack, dim=0)
     text_embedding = embedding[ModalityType.TEXT]
 
     combined_embedding_average = (image_embedding_avg + text_embedding) / 2
     return combined_embedding_average
 
-
-def flatten_embedding(embedding):
+def flatten_reshape_embedding(embedding):
     flattened_tensor = embedding.cpu().numpy().flatten()
-    return flattened_tensor
+    reshaped_flattened_tensor = flattened_tensor.reshape(1, -1)
+    return reshaped_flattened_tensor
 
 def write_embedding(flattened_embedding):
     try:
-        flattened_embedding_reshaped = flattened_embedding.reshape(1, -1)
-        embeddings_df = pd.DataFrame(flattened_embedding_reshaped) # create pandas dataframe
+        embeddings_df = pd.DataFrame(flattened_embedding) # create pandas dataframe
         csv_file_path = 'embeddings.csv'
         write_header = not os.path.exists(csv_file_path) # don't write header every time...
         embeddings_df.to_csv(csv_file_path, mode='a', index=False, header=write_header)
@@ -70,7 +68,7 @@ def main():
         curid, text, images = post
         if curid not in ids:
             post_embedding = create_embedding(model, device, text, images)
-            flattened = flatten_embedding(post_embedding)
+            flattened = flatten_reshape_embedding(post_embedding)
             if write_embedding(flattened):
                 new_ids.add(curid)
         else:
