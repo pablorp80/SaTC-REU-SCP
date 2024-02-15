@@ -11,13 +11,13 @@ def create_embedding(model, device, text, images):
     images = ['.assets/images/' + image for image in images]
     inputs = {
         ModalityType.VISION : data.load_and_transform_vision_data(images, device),
-        ModalityType.TEXT : data.load_and_transform_text([text], device)
+        ModalityType.TEXT : data.load_and_transform_text([text], device) # TODO discuss this
     }
     with torch.no_grad():
         embedding = model(inputs)
 
-    image_embedding_stack = embedding[ModalityType.VISION]
-    image_embedding_avg = torch.mean(image_embedding_stack, dim=0)
+    image_embedding = embedding[ModalityType.VISION]
+    image_embedding_avg = torch.mean(image_embedding, dim=0)
     text_embedding = embedding[ModalityType.TEXT]
 
     combined_embedding_average = (image_embedding_avg + text_embedding) / 2
