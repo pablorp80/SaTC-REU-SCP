@@ -16,15 +16,16 @@ def get_image_file_names():
             description = row[6]
             images = row[8]
 
-            text = title + '\n' + description
+            if (title.strip() and description.strip()):
+                text = title + '\n' + description
 
-            processed_data_str = images.replace('""', '"')
-            data_map = json.loads(processed_data_str)
-            file_names = list(data_map.values())
-            file_names = [x for x in file_names if x]
-            if len(file_names) > 0:
-                id_title_images = id, text, file_names
-                posts.append(id_title_images)
+                processed_data_str = images.replace('""', '"')
+                data_map = json.loads(processed_data_str)
+                file_names = list(data_map.values())
+                file_names = [x for x in file_names if x]
+                if len(file_names) > 0:
+                    id_title_images = id, text, file_names
+                    posts.append(id_title_images)
 
     return posts
 
