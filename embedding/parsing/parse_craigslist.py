@@ -21,19 +21,19 @@ def get_image_file_names():
             processed_data_str = images.replace('""', '"')
             data_map = json.loads(processed_data_str)
             file_names = list(data_map.values())
-            id_title_images = id, text, file_names
-            posts.append(id_title_images)
+            file_names = [x for x in file_names if x]
+            if len(file_names) > 0:
+                id_title_images = id, text, file_names
+                posts.append(id_title_images)
 
     return posts
 
 def main():
     id_title_imagepaths = get_image_file_names()
-    post_id, text, images = random.choice(id_title_imagepaths)
-    print(post_id + '\n\n' + text + '\n\n')
-    images = [x for x in images if x] # there were lots of nones
+    post_id, title, images = random.choice(id_title_imagepaths)
+    print(post_id + '\n\n' + title + '\n\n')
     for image in images:
         print(image)
 
 if __name__ == "__main__":
     main()
-
