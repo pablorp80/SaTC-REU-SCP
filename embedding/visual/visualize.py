@@ -3,17 +3,20 @@ import umap
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# Manually create a simple dataset
 csv_file = 'embeddings.csv'
-embeddings_df = pd.read_csv(csv_file)
+embeddings_df = pd.read_csv(csv_file, skiprows=1)
+embeddings = embeddings_df.to_numpy(dtype=np.float32)
 
-umap_model = umap.UMAP(n_components=2, n_neighbors=15, min_dist=0.1, random_state=42)
-embeddings_2d = umap_model.fit_transform(embeddings_df)
+nc = 2
+nn = 70
+md = 0.4
+rs = 42
+umap_model = umap.UMAP(n_components=nc, n_neighbors=nn, min_dist=md, random_state=rs)
+embeddings_2d = umap_model.fit_transform(embeddings)
 
-# Plot the result
 plt.figure(figsize=(10, 8))
-plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], alpha=0.5)
-plt.title('2D Visualization using UMAP')
+plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], alpha=0.4)
+plt.title('imagebind craigslist embeddings')
 plt.xlabel('Component 1')
 plt.ylabel('Component 2')
 plt.show()
