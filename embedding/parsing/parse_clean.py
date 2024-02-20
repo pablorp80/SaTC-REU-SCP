@@ -43,6 +43,3 @@ def get_image_file_names():
                     posts.append(id_title_images)
 
     return posts
-
-if __name__ == "__main__":
-    main()
