@@ -2,6 +2,7 @@ import numpy as np
 import umap
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 
 csv_file = 'embeddings.csv'
 embeddings_df = pd.read_csv(csv_file, header=0)
@@ -16,13 +17,13 @@ umap_model = umap.UMAP(n_components=nc, n_neighbors=nn, min_dist=md, random_stat
 embeddings_2d = umap_model.fit_transform(embeddings)
 
 from sklearn.cluster import KMeans
-k = 10
+k = 8
 kmeans = KMeans(n_clusters=k, random_state=42)
 clusters = kmeans.fit_predict(embeddings)
 
 #from sklearn.cluster import BisectingKMeans
 #k = 10
-#bkmeans = BisectingKMeans(n_clusters=k, bisecting_strategy="biggest_inertia")
+#bkmeans = BisectingKMeans(n_clusters=k, bisecting_strategy="largest_cluster")
 #clusters = bkmeans.fit_predict(embeddings)
 
 #from sklearn.cluster import AgglomerativeClustering
@@ -35,6 +36,14 @@ clusters = kmeans.fit_predict(embeddings)
 #birch = Birch(n_clusters=k, branching_factor=100, threshold=0.2)
 #clusters = birch.fit_predict(embeddings)
 
+silhouette_avg = silhouette_score(embeddings, clusters)
+print(f'Silhouette Score: {silhouette_avg}')
+
+calinski_harabasz_avg = calinski_harabasz_score(embeddings, clusters)
+print(f'Calinski-Harabasz Index: {calinski_harabasz_avg}')
+
+davies_bouldin_avg = davies_bouldin_score(embeddings, clusters)
+print(f'Davies-Bouldin Index: {davies_bouldin_avg}')
 
 plt.figure(figsize=(10, 8))
 for cluster in range(k):
