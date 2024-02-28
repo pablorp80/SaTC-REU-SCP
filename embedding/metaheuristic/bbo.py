@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
-from sklearn.datasets import make_blobs
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
 from mealpy import FloatVar, BBO
 
 
