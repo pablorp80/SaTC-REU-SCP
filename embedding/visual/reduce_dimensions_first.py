@@ -21,7 +21,7 @@ kmeans_reduced = KMeans(n_clusters=k, init='k-means++', random_state=rs, max_ite
 clusters_reduced = kmeans_reduced.fit_predict(embeddings_reduced)
 
 initial_centroids = np.array([embeddings[clusters_reduced == i].mean(axis=0) for i in range(k)])
-kmeans = KMeans(n_clusters=k, init='k-means++', n_init=1, max_iter=750)
+kmeans = KMeans(n_clusters=k, init=initial_centroids, n_init=1, max_iter=750)
 clusters = kmeans.fit_predict(embeddings)
 
 nc = 2
